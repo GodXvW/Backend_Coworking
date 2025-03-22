@@ -20,6 +20,9 @@ const CoworkingSchema = new mongoose.Schema({
         type: String,
         required: [true, 'Please add a region']
     },
+    picture: {
+        type: String,
+    },
     averageRating: {
         type: Number,
         default: 0

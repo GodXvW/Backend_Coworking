@@ -16,7 +16,7 @@ connectDB();
 
 const app = express();
 app.use(cors({ origin: "http://localhost:3000", credentials: true }));
-require("./function/cronReminder"); // Load the cron job
+// require("./function/cronReminder"); // Load the cron job
 
 //add body parser
 app.use(express.json());
