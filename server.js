@@ -15,8 +15,8 @@ dotenv.config({ path: './config/config.env' });
 connectDB();
 
 const app = express();
-app.use(cors());
-// app.use(cors({ origin: "https://coworkings.vercel.app", credentials: true }));
+// app.use(cors());
+app.use(cors({ origin: "https://coworkings.vercel.app", credentials: true }));
 // require("./function/cronReminder"); // Load the cron job
 
 //add body parser
