@@ -119,7 +119,7 @@ exports.addReservation = async (req, res, next) => {
         });
     }
 }
-//@route PUT /api/v1/Reservations/:id
+//@route PUT /api/v1/reservations/:id
 exports.updateReservation = async (req, res, next) => {
     try {
         let reservation = await Reservation.findById(req.params.id);
@@ -168,42 +168,46 @@ exports.updateReservation = async (req, res, next) => {
 //@route DELETE /api/v1/Reservations/:id
 exports.deleteReservation = async (req, res, next) => {
     try {
+        console.log("Received DELETE request for reservation:", req.params.id);
+        console.log("User making request:", req.user.id, "Role:", req.user.role);
+
         const reservation = await Reservation.findById(req.params.id);
         if (!reservation) {
+            console.log("Reservation not found.");
             return res.status(404).json({
                 success: false,
-                message: `No Reservation with the id of ${req.params.id}`
+                message: `No reservation with the id of ${req.params.id}`
             });
         }
+
         if (reservation.user.toString() !== req.user.id && req.user.role !== 'admin') {
-            return res.status(401).json({
+            console.log(`User ${req.user.id} is not authorized to delete this reservation.`);
+            return res.status(403).json({
                 success: false,
                 message: `User ${req.user.id} is not authorized to delete this reservation`
             });
         }
+
         await reservation.deleteOne();
+        console.log("Reservation deleted successfully.");
 
         const user = await User.findById(reservation.user);
         await sendEmail(
             user.email,
             "Cancellation: Your Coworking Space Reservation",
-            `Dear ${user.name},\n\nWe regret to inform you that your co-working space reservation has been successfully canceled. Below are the details of the canceled booking:\n\n
-            Location: ${reservation.coworking.address}\n
-            Operating Hours: ${reservation.coworking.open_close_time}\n
-            If this cancellation was made in error or if you need further assistance, feel free to contact us at ${reservation.coworking.telephone}.\n\nWe hope to welcome you to our co-working space in the future.
-             \n\nBest regards,\nCoworking Space Team`
+            `Dear ${user.name},\n\nWe regret to inform you that your co-working space reservation has been successfully canceled.`
         );
 
-        res.status(200).json({
+        return res.status(200).json({
             success: true,
             data: {}
         });
     } catch (error) {
-        console.log(error);
+        console.log("Error deleting reservation:", error);
         return res.status(500).json({
             success: false,
-            message: 'Cannot delete Reservation'
+            message: "Cannot delete reservation"
         });
     }
-}
+};
 
