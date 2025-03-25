@@ -93,6 +93,8 @@ exports.addReservation = async (req, res, next) => {
             });
         }
         const reservation = await Reservation.create(req.body);
+        await reservation.populate("coworking");
+
         const user = await User.findById(req.user.id);
         const timeSlot = req.body.resvTime.split(" ")[1]; // Extract "HH:mm-HH:mm"
 
